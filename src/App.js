@@ -1,11 +1,12 @@
 import './App.css'
-import { useEffect } from 'react'
 
 // import Webcam from './Webcam'
+import { useEffect } from 'react'
 import MusicVideo from './MusicVideo'
+import Editor from './Editor'
 // import firestore from './Firestore'
 // import { doc, setDoc } from 'firebase/firestore'
-// import { getStorage, ref, uploadBytes } from "firebase/storage"
+import { getStorage, ref, uploadBytes, deleteObject, listAll } from "firebase/storage"
 
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
 
   // useEffect(() => {
 
-  //   const storage = getStorage();
+  //   const storage = getStorage()
   //   const storageRef = ref(storage, 'frames')
 
   //   const bytes = new Uint8Array([0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x77, 0x6f, 0x72, 0x6c, 0x64, 0x21]);
@@ -33,10 +34,21 @@ function App() {
   //   });
   // }, [])
 
+  // useEffect(() => {
+  //   const storage = getStorage()
+  //   const storageRef = ref(storage, 'frames')
+  //   listAll(storageRef).then((results) => {
+  //     results.items.forEach((i) => {
+  //       deleteObject(i)
+  //     })
+  //   })
+  // }, [])
+
   return (
     <>
-      <MusicVideo/>
+      {/* <MusicVideo/> */}
       {/* <Webcam /> */}
+      <Editor></Editor>
     </>
   );
 }

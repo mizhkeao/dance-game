@@ -7,8 +7,10 @@ import Box from "@mui/material/Box"
 
 // import PoseCanvas from './PoseCanvas'
 import assert from 'assert'
-import { firestore } from "./Firestore"
+import fbApp from "./Firestore"
 import { getStorage, ref, uploadBytes } from "firebase/storage"
+import { getFirestore, doc, setDoc } from "firebase/firestore"
+
 
 const MusicVideo = () => {
 
@@ -20,15 +22,15 @@ const MusicVideo = () => {
     const cvRef = useRef()
 
     useEffect(() => {
-        mvRef.current.playbackRate = 1.0
+        mvRef.current.playbackRate = 0.1
         getDetector()
     }, [])
 
-    useEffect(() => {
-        if (detector != null) {
-            mvRef.current.play()
-        }
-    }, [detector])
+    // useEffect(() => {
+    //     if (detector != null) {
+    //         mvRef.current.play()
+    //     }
+    // }, [detector])
     
     const getDetector = async() => {
         try {
@@ -39,7 +41,7 @@ const MusicVideo = () => {
             }
             const detector = await createDetector(SupportedModels.MoveNet, detectorConfig)
             setDetector(detector)
-            console.log('mv detector loaded.')
+            console.log('detector loaded.')
         } catch(e) {
           console.log(e)
         }
@@ -50,40 +52,56 @@ const MusicVideo = () => {
     // Get a reference to the storage service, which is used to create references in your storage bucket
     const storage = getStorage()
 
-    const getPoses = useCallback(async (frame) => {
+    // Uploading Poses to Firebase
+    const db = getFirestore(fbApp)
+
+    const getPoses = useCallback(async (currFrame) => {
         assert(detector != null)
+        // console.log('getPoses')
         try {
             const poses = await detector.estimatePoses(mvRef.current)
-            console.log(poses[0])
+            // setDbPose(poses[0], currFrame)
+            const pose = poses[0]
+            const poseName = `roxanne-${zeroPad(currFrame, 5)}`
+            const ref = doc(db, 'mvs', 'roxanne', 'poses', poseName)
+            setDoc(ref, {
+                keypoints: pose.keypoints,
+                score: pose.score,
+            })
+            console.log(`setDoc ${poseName}`)
+            
             setPoses(poses)
         } catch(e) {
             console.log(e)
         }
-    }, [detector])
+    }, [db, detector])
 
     const zeroPad = (num, places) => String(num).padStart(places, '0')
-    
+
     const frameCallback = useCallback((_, metadata) => {
+        assert(detector != null)
+        // console.log('frameCallback')
         // get pose of humans in video
         const currFrame = metadata.presentedFrames - startFrame
+        getPoses(currFrame)
         setFrame(currFrame)
-        // getPoses(currFrame)
 
-        const cv = cvRef.current
-        const ctx = cv.getContext('2d')
-        ctx.drawImage(mvRef.current, 0, 0, 854, 480)
-        cv.toBlob((blob) => {
-            const storageRef = ref(storage, `frames/roxanne-${zeroPad(currFrame, 4)}.png`)
-            uploadBytes(storageRef, blob)
-            console.log(`uploaded ${currFrame}`)
-        })
+        // const cv = cvRef.current
+        // const ctx = cv.getContext('2d')
+        // ctx.drawImage(mvRef.current, 0, 0, 854, 480)
+        // cv.toBlob((blob) => {
+        //     const storageRef = ref(storage, `frames/roxanne-${zeroPad(currFrame, 4)}.png`)
+        //     uploadBytes(storageRef, blob)
+        //     console.log(`uploaded ${currFrame}`)
+        // })
         
         mvRef.current.requestVideoFrameCallback(frameCallback)
-    }, [getPoses, startFrame, storage])
+    }, [getPoses, startFrame, storage, detector])
 
     const playMv = useCallback(() => {
+        assert(detector != null)
         mvRef.current.requestVideoFrameCallback(frameCallback)
-    }, [frameCallback,])
+    }, [frameCallback, detector])
 
     const mvEnded = useCallback(() => {
         setStartFrame(frame)
@@ -100,18 +118,24 @@ const MusicVideo = () => {
                     height: '480',
                     top: 20,
                 }}>
-                    <video ref={mvRef} width={"854"} height={"480"} src={"roxanne.mov"} onPlay={playMv} onEnded={mvEnded} hidden={true} muted={true}/>
+                    <video ref={mvRef} 
+                        width={"854"} height={"480"} src={"roxanne.mov"}
+                        onPlay={playMv}
+                        onEnded={mvEnded}
+                        muted={true}
+                        controls={true}
+                    />
                     {/* <video ref={mvRef} width={"854"} height={"480"} src={"roxanne.mov"} onPlay={playMv} onEnded={mvEnded} controls={true}/> */}
                 </Box>
 
-                <Box sx={{
+                {/* <Box sx={{
                     position: 'absolute',
                     width: '854',
                     height: '400',
                     top: 20,
                 }}>
                     <canvas ref={cvRef} width={"854"} height={"480"}/>
-                </Box>
+                </Box> */}
             </Box>
         </>
     )
