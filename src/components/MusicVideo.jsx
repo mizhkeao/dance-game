@@ -140,7 +140,7 @@ export default function MusicVideo({ songName, poseArr, userPose, refPoseIndex }
 				width="100%"
 				onPlay={mvStart}
 				onEnded={mvEnded}
-				// controls={true}
+				controls={true}
 				// muted={true}
 				// hidden={true}
 				style={{

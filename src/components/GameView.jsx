@@ -20,7 +20,7 @@ export default function GameView() {
 	
 		const zeroPad = (num, places) => String(num).padStart(places, '0')
 
-		const frameArr = Array.from(Array(77*2), (_, i) => {
+		const frameArr = Array.from(Array(140), (_, i) => {
 				const index = parseInt(i * spacing + mvStartFrame) 
 				return `${songName}-${zeroPad(index, 5)}`
 		})
