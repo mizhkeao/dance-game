@@ -5,7 +5,9 @@ import { getFirestore, doc, getDoc } from "firebase/firestore"
 import MusicVideo from './MusicVideo'
 import PoseCam from './PoseCam'
 import fbApp from './Firestore'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+
+import PoseHint from './PoseHint'
 
 export default function GameView() {
 
@@ -23,6 +25,7 @@ export default function GameView() {
 				return `${songName}-${zeroPad(index, 5)}`
 		})
 		
+		const refPoseIndex = useRef(0)
 		const [poseArr, setPoseArr] = useState(null)
 
 		const db = getFirestore(fbApp)
@@ -50,11 +53,21 @@ export default function GameView() {
 			getPoseArr()
 		}, [])
 
+		const [userPose, setUserPose] = useState(null)
+
     return (
     <Container>
-        <Typography variant="h4" component="h2"> { songName }</Typography>
-        {/* <PoseCam /> */}
-        <MusicVideo songName={songName} poseArr={poseArr}/>
+        {/* <Typography variant="h4" component="h2"> { songName }</Typography> */}
+        <MusicVideo songName={songName} poseArr={poseArr} userPose={userPose} refPoseIndex={refPoseIndex}/>
+				<PoseHint 
+					pose={poseArr ? poseArr[refPoseIndex.current].pose.keypoints : null} 
+					width={852 * 0.45}
+					height={480 * 0.45} 
+					color='white' 
+					scale={0.8}
+				/>
+        <PoseCam setUserPose={setUserPose}/>
+
     </Container>
     )
 }

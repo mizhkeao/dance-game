@@ -9,9 +9,9 @@ import Box from "@mui/material/Box"
 
 import PoseCanvas from './PoseCanvas'
 
-export default function PoseCam() {
+export default function PoseCam({ setUserPose }) {
     
-    const [pose, setPose] = useState(null)
+    // const [pose, setPose] = useState(null)
     const [detector, setDetector] = useState(null)
 
     const cameraRef = useRef()
@@ -31,8 +31,12 @@ export default function PoseCam() {
             const camera = new Camera(cameraRef.current, {
                 onFrame: async () => {
                   const poses = await detector.estimatePoses(cameraRef.current)
-                  setPose(poses[0])
-                  // console.log(poses[0])
+									if (poses.length === 0) {
+										setUserPose(null)
+									} else {
+										setUserPose(poses[0].keypoints)
+										// console.log(poses[0])
+									}
                 },
                 faceingMode: 'user',
                 width: 384,

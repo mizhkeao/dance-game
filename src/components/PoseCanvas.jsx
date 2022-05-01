@@ -22,13 +22,13 @@ export default function PoseCanvas({pose, color, width, height, scale}) {
         ctx.clearRect(0, 0, width, height)
         if (pose == null) { return }
 
-				ctx.fillStyle = 'gray'
+				ctx.fillStyle = 'rgba(0,0,0,0.5)'
 				ctx.fillRect(0, 0, width, height)
 
-        ctx.lineWidth = 2
+        ctx.lineWidth = 3
         ctx.strokeStyle = color
-				console.log(pose)
-        const p = pose.keypoints
+				// console.log(pose)
+        const p = pose
 
         // head
         drawLine(ctx, p[ 4], p[ 2])
@@ -59,8 +59,8 @@ export default function PoseCanvas({pose, color, width, height, scale}) {
         <canvas ref={cvRef} width={width} height={height} 
 					style={{
 						position: 'absolute',
-						top: 0,
-						right: 0,
+						bottom: 0,
+						right: -20,
 					}}
 				/>
     )
