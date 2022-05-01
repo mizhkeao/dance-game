@@ -25,7 +25,7 @@ export default function AsyncImage({ urlKey }) {
           ctx.stroke()
           ctx.closePath()
         }
-    })
+    }, [r])
 
     useEffect(() => {
         setUrl(null)

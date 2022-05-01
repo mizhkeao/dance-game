@@ -32,9 +32,9 @@ export default function PoseCam() {
                 onFrame: async () => {
                   const poses = await detector.estimatePoses(cameraRef.current)
                   setPose(poses[0])
-                  console.log(poses[0])
+                  // console.log(poses[0])
                 },
-                // facingMode: 'user',
+                faceingMode: 'user',
                 width: 384,
                 height: 216,
               })
@@ -56,8 +56,13 @@ export default function PoseCam() {
 
     return (
         <Box>
-            <video ref={cameraRef} width="384" height="216"/>
-            <PoseCanvas pose={pose} color="red" width="384" height="216" scale={1} />
+            <video ref={cameraRef} width="384" height="216" style={{
+              transform: 'scaleX(-1)',
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+            }}/>
+            {/* <PoseCanvas pose={pose} color="red" width="384" height="216" scale={1} /> */}
         </Box>
     )
 }

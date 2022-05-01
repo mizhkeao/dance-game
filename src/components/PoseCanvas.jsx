@@ -17,13 +17,17 @@ export default function PoseCanvas({pose, color, width, height, scale}) {
     }, [scale, height, width])
 
     useEffect(() => {
-        if (pose == null) { return }
         const canvas = cvRef.current
         const ctx = canvas.getContext('2d')
         ctx.clearRect(0, 0, width, height)
+        if (pose == null) { return }
+
+				ctx.fillStyle = 'gray'
+				ctx.fillRect(0, 0, width, height)
+
         ctx.lineWidth = 2
         ctx.strokeStyle = color
-
+				console.log(pose)
         const p = pose.keypoints
 
         // head
@@ -52,6 +56,12 @@ export default function PoseCanvas({pose, color, width, height, scale}) {
     }, [pose, color, drawLine, height, width])
 
     return (
-        <canvas ref={cvRef} width={width} height={height} />
+        <canvas ref={cvRef} width={width} height={height} 
+					style={{
+						position: 'absolute',
+						top: 0,
+						right: 0,
+					}}
+				/>
     )
 }

@@ -1,9 +1,8 @@
 import './App.css'
 
-import { useEffect } from 'react'
-import MusicVideo from './Uploader'
-import Editor from './Editor'
-import GameView from './GameView'
+import Uploader from './components/Uploader'
+import Editor from './components/Editor'
+import GameView from './components/GameView'
 
 function App() {
 
