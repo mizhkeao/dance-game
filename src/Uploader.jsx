@@ -12,7 +12,7 @@ import { getStorage, ref, uploadBytes } from "firebase/storage"
 import { getFirestore, doc, setDoc } from "firebase/firestore"
 
 
-const MusicVideo = () => {
+const Uploader = () => {
 
     const [startFrame, setStartFrame] = useState(0)
     const [frame, setFrame] = useState(0)
@@ -26,11 +26,11 @@ const MusicVideo = () => {
         getDetector()
     }, [])
 
-    // useEffect(() => {
-    //     if (detector != null) {
-    //         mvRef.current.play()
-    //     }
-    // }, [detector])
+    useEffect(() => {
+        if (detector != null) {
+            mvRef.current.play()
+        }
+    }, [detector])
     
     const getDetector = async() => {
         try {
@@ -47,7 +47,7 @@ const MusicVideo = () => {
         }
     }
 
-    const [poses, setPoses] = useState([])
+    // const [poses, setPoses] = useState([])
 
     // Get a reference to the storage service, which is used to create references in your storage bucket
     const storage = getStorage()
@@ -56,8 +56,8 @@ const MusicVideo = () => {
     const db = getFirestore(fbApp)
 
     const getPoses = useCallback(async (currFrame) => {
-        assert(detector != null)
-        // console.log('getPoses')
+        if (detector == null) { return }
+        console.log('getPoses')
         try {
             const poses = await detector.estimatePoses(mvRef.current)
             // setDbPose(poses[0], currFrame)
@@ -68,9 +68,8 @@ const MusicVideo = () => {
                 keypoints: pose.keypoints,
                 score: pose.score,
             })
-            console.log(`setDoc ${poseName}`)
-            
-            setPoses(poses)
+            console.log(`getPose ${poseName}`)
+            // setPoses(poses)
         } catch(e) {
             console.log(e)
         }
@@ -79,27 +78,28 @@ const MusicVideo = () => {
     const zeroPad = (num, places) => String(num).padStart(places, '0')
 
     const frameCallback = useCallback((_, metadata) => {
-        assert(detector != null)
-        // console.log('frameCallback')
+        if (detector == null) { return }
+        console.log('frameCallback')
         // get pose of humans in video
         const currFrame = metadata.presentedFrames - startFrame
-        getPoses(currFrame)
+        // getPoses(currFrame)
         setFrame(currFrame)
 
         // const cv = cvRef.current
         // const ctx = cv.getContext('2d')
         // ctx.drawImage(mvRef.current, 0, 0, 854, 480)
         // cv.toBlob((blob) => {
-        //     const storageRef = ref(storage, `frames/roxanne-${zeroPad(currFrame, 4)}.png`)
+        //     const storageRef = ref(storage, `roxanne/roxanne-${zeroPad(currFrame, 5)}.png`)
         //     uploadBytes(storageRef, blob)
-        //     console.log(`uploaded ${currFrame}`)
+        //     console.log(`getImg ${currFrame}`)
         // })
         
         mvRef.current.requestVideoFrameCallback(frameCallback)
     }, [getPoses, startFrame, storage, detector])
 
     const playMv = useCallback(() => {
-        assert(detector != null)
+        if (detector == null) { return }
+        console.log('playMv')
         mvRef.current.requestVideoFrameCallback(frameCallback)
     }, [frameCallback, detector])
 
@@ -123,9 +123,10 @@ const MusicVideo = () => {
                         onPlay={playMv}
                         onEnded={mvEnded}
                         muted={true}
+                        // autoPlay={true}
                         controls={true}
+                        hidden={true}
                     />
-                    {/* <video ref={mvRef} width={"854"} height={"480"} src={"roxanne.mov"} onPlay={playMv} onEnded={mvEnded} controls={true}/> */}
                 </Box>
 
                 {/* <Box sx={{
@@ -141,6 +142,5 @@ const MusicVideo = () => {
     )
 }
 
-{/* <PoseCanvas poses={poses} width={"854"} height={"400"} color={"red"}/> */}
 
-export default MusicVideo
+export default Uploader
