@@ -135,7 +135,7 @@ export default function MusicVideo({ songName, poseArr, userPose, refPoseIndex }
 			<Typography variant="h5" component="h2"> { `Streak: ${streak.current}`}</Typography>
 			{/* <Typography variant="h7" component="h2"> { `frame ${frame}, pose ${refPoseIndex.current}` }</Typography> */}
 			<video 
-				src={`${songName}.mov`}
+				src={`/dance-game/${songName}.mov`}
 				ref={mvRef} 
 				width="100%"
 				onPlay={mvStart}
