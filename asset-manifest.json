@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/dance-game/static/css/main.073c9b0a.css",
-    "main.js": "/dance-game/static/js/main.dfd078f7.js",
+    "main.js": "/dance-game/static/js/main.b3d7c4c7.js",
     "static/js/787.e4f48957.chunk.js": "/dance-game/static/js/787.e4f48957.chunk.js",
     "index.html": "/dance-game/index.html",
     "main.073c9b0a.css.map": "/dance-game/static/css/main.073c9b0a.css.map",
-    "main.dfd078f7.js.map": "/dance-game/static/js/main.dfd078f7.js.map",
+    "main.b3d7c4c7.js.map": "/dance-game/static/js/main.b3d7c4c7.js.map",
     "787.e4f48957.chunk.js.map": "/dance-game/static/js/787.e4f48957.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.dfd078f7.js"
+    "static/js/main.b3d7c4c7.js"
   ]
 }
