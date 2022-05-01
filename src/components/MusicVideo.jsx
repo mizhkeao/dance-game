@@ -17,6 +17,7 @@ export default function MusicVideo({ songName, poseArr, userPose, refPoseIndex }
 
   const [score, setScore] = useState(0)
 	const poseLoss = useRef(100)
+	const streak = useRef(0)
 
 	const frameCallback = useCallback((_, metadata) => {
 		// console.log('frameCallback')
@@ -36,8 +37,12 @@ export default function MusicVideo({ songName, poseArr, userPose, refPoseIndex }
 					// console.log(poseLoss.current)
 					if (poseLoss.current < 15) {
 						setScore((s) => { return s + 10 })
+						streak.current += 1
 					} else if (poseLoss.current < 30) {
 						setScore((s) => { return s + 5 })
+						streak.current += 1
+					} else {
+						streak.current = 0
 					}
 
 					poseLoss.current = 100
@@ -120,13 +125,14 @@ export default function MusicVideo({ songName, poseArr, userPose, refPoseIndex }
 	}, [scorePose, targetPose, userPose])
 
 	const percentScore = (score) => {
-		const perfectScore = (refPoseIndex.current + 1) * 10
-		return parseInt( 100 * score / perfectScore)
+		const perfectScore = (refPoseIndex.current) * 10
+		return parseInt( 100 * score / (perfectScore === 0 ? 1 : perfectScore))
 	}
 
 	return (
 		<div style={{ position: 'relative'}}>
 			<Typography variant="h4" component="h2"> { `Score: ${ percentScore(score) }%`/*, Loss: ${poseLoss.current}`*/ }</Typography>
+			<Typography variant="h5" component="h2"> { `Streak: ${streak.current}`}</Typography>
 			{/* <Typography variant="h7" component="h2"> { `frame ${frame}, pose ${refPoseIndex.current}` }</Typography> */}
 			<video 
 				src={`${songName}.mov`}
