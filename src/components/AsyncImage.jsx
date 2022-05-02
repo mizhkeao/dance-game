@@ -5,7 +5,7 @@ import { Box } from "@mui/material"
 
 import fbApp from "./Firestore"
 
-export default function AsyncImage({ urlKey }) {
+export default function AsyncImage({ songName, urlKey }) {
 
     const storage = getStorage()
     const db = getFirestore(fbApp)
@@ -15,7 +15,7 @@ export default function AsyncImage({ urlKey }) {
 
     const cvRef = useRef(null)
 
-    const r = 320/852
+    const r = 320/1280
 
     const drawLine = useCallback((ctx, p1, p2) => {
         if (p1 && p2) { 
@@ -36,7 +36,7 @@ export default function AsyncImage({ urlKey }) {
             const getImgUrl = async (urlKey) => {
                 // console.log(urlKey)
                 try {
-                    const url = await getDownloadURL(ref(storage, `roxanne/${urlKey}.png`))
+                    const url = await getDownloadURL(ref(storage, `${songName}/${urlKey}.png`))
                     setUrl(url)
                 } catch(e) {
                     console.log(e)
@@ -44,7 +44,7 @@ export default function AsyncImage({ urlKey }) {
             }
 
             const getPoseUrl = async (urlKey) => {
-                const poseRef = doc(db, 'mvs', 'roxanne', 'poses', urlKey)
+                const poseRef = doc(db, 'mvs', songName, 'poses', urlKey)
                 try {
                     const poseSnap = await getDoc(poseRef)
                     setPose(poseSnap.data())
@@ -57,7 +57,7 @@ export default function AsyncImage({ urlKey }) {
             getImgUrl(urlKey)
             getPoseUrl(urlKey)
         }
-    }, [db, storage, urlKey])
+    }, [db, storage, songName, urlKey])
 
     useEffect(() => {
         if (pose == null) { return }

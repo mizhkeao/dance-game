@@ -1,6 +1,7 @@
 
-import { Container, Typography } from '@mui/material'
+import { Container, FormControl, Select, MenuItem } from '@mui/material'
 import { getFirestore, doc, getDoc } from "firebase/firestore"
+import { getStorage, getDownloadURL, ref } from "firebase/storage"
 
 import MusicVideo from './MusicVideo'
 import PoseCam from './PoseCam'
@@ -11,34 +12,36 @@ import PoseHint from './PoseHint'
 
 export default function GameView() {
 
-    const songName = "roxanne"
-
-		const songBpm = 117
-		const songFps = 29.97
-		const spacing = 60 / songBpm * songFps * 2
-		const mvStartFrame = 197
-	
-		const zeroPad = (num, places) => String(num).padStart(places, '0')
-
-		const frameArr = Array.from(Array(140), (_, i) => {
-				const index = parseInt(i * spacing + mvStartFrame) 
-				return `${songName}-${zeroPad(index, 5)}`
-		})
-		
-		const refPoseIndex = useRef(0)
-		const [poseArr, setPoseArr] = useState(null)
+    const [songName, setSongName] = useState('')
 
 		const db = getFirestore(fbApp)
+		const storage = getStorage()
+		const [mvUrl, setMvUrl] = useState(null)
+
+		const zeroPad = (num, places) => String(num).padStart(places, '0')
+	
+		const [poseArr, setPoseArr] = useState(null)
 
 		useEffect(() => {
-			// console.log(frameArr)
 
-			const getPoseArr = async() => {
+			const setSong = async (songName) => {
 
+				const songRef = doc(db, 'mvs', songName)
+				const songSnap = await getDoc(songRef)
+				const song = songSnap.data()
+
+				console.log(song)
+		
+				const frameArr = Array.from(Array(song.moves), (_, i) => {
+						const framesPerBeat = (60 * song.fps ) / song.bpm
+						const spacing = framesPerBeat * song.time_sig
+						const index = parseInt(i * spacing + song.startFrame)
+						return `${songName}-${zeroPad(index, 5)}`
+				})
 				const poseArrTemp = []
-
+	
 				const poseUrls = frameArr.map(async (urlKey, index) => {
-					const poseRef = doc(db, 'mvs', 'roxanne', 'poses', urlKey)
+					const poseRef = doc(db, 'mvs', songName, 'poses', urlKey)
 					const poseSnap = await getDoc(poseRef)
 					const frame = parseInt(urlKey.split('-')[1].split('.')[0])
 					poseArrTemp[index] = {frame: frame, pose: poseSnap.data()}
@@ -46,27 +49,56 @@ export default function GameView() {
 				})
 
 				await Promise.all(poseUrls)
-				setPoseArr(poseArrTemp)
 				console.log(poseArrTemp)
+				setPoseArr(poseArrTemp)
+
+				const mvUrl = await getDownloadURL(ref(storage, `${songName}.mp4`))
+				console.log(mvUrl)
+				setMvUrl(mvUrl)
 			}
+	
+			setSong(songName)
 
-			getPoseArr()
-		}, [])
+		}, [db, songName])
 
+		
+		const refPoseIndex = useRef(0)
 		const [userPose, setUserPose] = useState(null)
+  	const [targetPose, setTargetPose] = useState(null)
 
     return (
     <Container>
-        {/* <Typography variant="h4" component="h2"> { songName }</Typography> */}
-        <MusicVideo songName={songName} poseArr={poseArr} userPose={userPose} refPoseIndex={refPoseIndex}/>
-				<PoseHint 
-					pose={poseArr ? poseArr[refPoseIndex.current].pose.keypoints : null} 
-					width={852 * 0.45}
-					height={480 * 0.45} 
-					color='white' 
-					scale={0.8}
-				/>
-        <PoseCam setUserPose={setUserPose}/>
+			<FormControl fullWidth>
+					<Select
+						value={songName}
+						label="Song"
+						onChange={(e) => {setSongName(e.target.value)}}
+					>
+						{/* <MenuItem value={''}>
+  						<em>None</em>
+						</MenuItem> */}
+						<MenuItem value={'roxanne'}> Roxanne - Arizona Zervas</MenuItem>
+						<MenuItem value={'lilac'}> Lilac - IU </MenuItem>
+					</Select>
+			</FormControl>
+			{/* <Typography variant="h4" component="h2"> { songName }</Typography> */}
+			<MusicVideo 
+				mvUrl={mvUrl} 
+				songName={songName} 
+				poseArr={poseArr} 
+				userPose={userPose} 
+				refPoseIndex={refPoseIndex}
+				targetPose={targetPose}
+				setTargetPose={setTargetPose}
+			/>
+			<PoseHint 
+				pose={targetPose}
+				width={384}
+				height={216} 
+				color='white' 
+				scale={0.5}
+			/>
+			<PoseCam setUserPose={setUserPose}/>
 
     </Container>
     )

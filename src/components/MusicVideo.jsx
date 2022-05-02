@@ -1,8 +1,8 @@
 import assert from 'assert'
 import { useRef, useState, useCallback, useEffect } from 'react'
-import { Box, Typography } from '@mui/material'
+import { Typography } from '@mui/material'
 
-export default function MusicVideo({ songName, poseArr, userPose, refPoseIndex }) {
+export default function MusicVideo({ mvUrl, songName, poseArr, userPose, refPoseIndex, targetPose, setTargetPose }) {
 
 	const mvRef = useRef()
 
@@ -10,7 +10,7 @@ export default function MusicVideo({ songName, poseArr, userPose, refPoseIndex }
 	const [frame, setFrame] = useState(0)
 
 	// const refPoseIndex = useRef(0)
-  const [targetPose, setTargetPose] = useState(null)
+  // const [targetPose, setTargetPose] = useState(null)
 
 	const poseLeeway = 5
 	const poseOffset = 0
@@ -35,10 +35,10 @@ export default function MusicVideo({ songName, poseArr, userPose, refPoseIndex }
 				if (currFrame > targetFrame + poseLeeway - poseOffset) {
 					refPoseIndex.current += 1
 					// console.log(poseLoss.current)
-					if (poseLoss.current < 15) {
+					if (poseLoss.current < 12) {
 						setScore((s) => { return s + 10 })
 						streak.current += 1
-					} else if (poseLoss.current < 30) {
+					} else if (poseLoss.current < 24) {
 						setScore((s) => { return s + 5 })
 						streak.current += 1
 					} else {
@@ -57,7 +57,7 @@ export default function MusicVideo({ songName, poseArr, userPose, refPoseIndex }
 		}
 
     mvRef.current.requestVideoFrameCallback(frameCallback)
-	}, [poseArr, poseLoss, startFrame])
+	}, [poseArr, refPoseIndex, setTargetPose, startFrame])
 
 	const mvStart = useCallback(() => {
 		console.log('mvStart')
@@ -71,11 +71,18 @@ export default function MusicVideo({ songName, poseArr, userPose, refPoseIndex }
 		setFrame(frame - startFrame)
 	}, [frame, startFrame])
 
+	// useEffect(() => {
+	// 	if (poseArr != null) {
+	// 		mvRef.current.play()
+	// 	}
+	// }, [poseArr])
+
 	useEffect(() => {
-		if (poseArr != null) {
-			mvRef.current.play()
-		}
-	}, [poseArr])
+		setScore(0)
+		poseLoss.current = 100
+		streak.current = 0
+		setTargetPose(null)
+	}, [songName])
 
 	const dist2D = useCallback((p1, p2) => {
 		// console.log(p1)
@@ -131,11 +138,11 @@ export default function MusicVideo({ songName, poseArr, userPose, refPoseIndex }
 
 	return (
 		<div style={{ position: 'relative'}}>
-			<Typography variant="h4" component="h2"> { `Score: ${ percentScore(score) }%`/*, Loss: ${poseLoss.current}`*/ }</Typography>
-			<Typography variant="h5" component="h2"> { `Streak: ${streak.current}`}</Typography>
+			<Typography align="right" variant="h5" component="h2"> { `Score: ${ percentScore(score) }%`/*, Loss: ${poseLoss.current}`*/ }</Typography>
+			<Typography align="right" variant="h5" component="h2"> { `Streak: ${streak.current}`}</Typography>
 			{/* <Typography variant="h7" component="h2"> { `frame ${frame}, pose ${refPoseIndex.current}` }</Typography> */}
 			<video 
-				src={`/dance-game/${songName}.mov`}
+				src={mvUrl}
 				ref={mvRef} 
 				width="100%"
 				onPlay={mvStart}

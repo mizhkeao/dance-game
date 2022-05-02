@@ -5,14 +5,13 @@ import { useState, useCallback, useEffect, useRef } from 'react'
 
 import Box from "@mui/material/Box"
 
-// import PoseCanvas from './PoseCanvas'
-import assert from 'assert'
 import fbApp from "./Firestore"
+import PoseCanvas from "./PoseCanvas"
 import { getStorage, ref, uploadBytes } from "firebase/storage"
 import { getFirestore, doc, setDoc } from "firebase/firestore"
 
 
-const Uploader = () => {
+const Uploader = ({ songName }) => {
 
 	const [startFrame, setStartFrame] = useState(0)
 	const [frame, setFrame] = useState(0)
@@ -22,22 +21,24 @@ const Uploader = () => {
 	const cvRef = useRef()
 
 	useEffect(() => {
-		mvRef.current.playbackRate = 0.1
+		// mvRef.current.playbackRate = 0.1
+		mvRef.current.playbackRate = 0.3
 		getDetector()
 	}, [])
 
-	useEffect(() => {
-		if (detector != null) {
-			mvRef.current.play()
-		}
-	}, [detector])
+	// useEffect(() => {
+	// 	if (detector != null) {
+	// 	mvRef.current.play()
+	// 	}
+	// }, [detector])
 	
 	const getDetector = async() => {
 		try {
 			const detectorConfig = {
-				// modelUrl: "models/movenet/model.json",
+				modelUrl: "/dance-game/movenet/model.json",
 				modelType: movenet.modelType.SINGLEPOSE_THUNDER,
-				enableSmoothing: true,
+				minPoseScore: 0.5,
+        enableSmoothing: true,
 			}
 			const detector = await createDetector(SupportedModels.MoveNet, detectorConfig)
 			setDetector(detector)
@@ -47,7 +48,7 @@ const Uploader = () => {
 		}
 	}
 
-	// const [poses, setPoses] = useState([])
+	const [pose, setPose] = useState(null)
 
 	// Get a reference to the storage service, which is used to create references in your storage bucket
 	const storage = getStorage()
@@ -55,21 +56,25 @@ const Uploader = () => {
 	// Uploading Poses to Firebase
 	const db = getFirestore(fbApp)
 
-	const getPoses = useCallback(async (currFrame) => {
+	const detectPoses = useCallback(async (currFrame) => {
 		if (detector == null) { return }
-		console.log('getPoses')
+		// console.log('getPoses')
 		try {
 			const poses = await detector.estimatePoses(mvRef.current)
-			// setDbPose(poses[0], currFrame)
+			
+			// !: upload frame pose data
 			const pose = poses[0]
-			const poseName = `roxanne-${zeroPad(currFrame, 5)}`
-			const ref = doc(db, 'mvs', 'roxanne', 'poses', poseName)
-			setDoc(ref, {
-					keypoints: pose.keypoints,
-					score: pose.score,
-			})
-			console.log(`getPose ${poseName}`)
-			// setPoses(poses)
+			if (pose != null) {
+				setPose(pose)
+				const poseName = `${songName}-${zeroPad(currFrame, 5)}`
+				const ref = doc(db, 'mvs', songName, 'poses', poseName)
+				setDoc(ref, {
+						keypoints: pose.keypoints,
+						score: pose.score,
+				})
+				// console.log(`getPose ${poseName}`)
+			}
+
 		} catch(e) {
 				console.log(e)
 		}
@@ -79,23 +84,24 @@ const Uploader = () => {
 
 	const frameCallback = useCallback((_, metadata) => {
 			if (detector == null) { return }
-			console.log('frameCallback')
+			// console.log('frameCallback')
 			// get pose of humans in video
 			const currFrame = metadata.presentedFrames - startFrame
-			// getPoses(currFrame)
+			detectPoses(currFrame)
 			setFrame(currFrame)
 
-			// const cv = cvRef.current
-			// const ctx = cv.getContext('2d')
-			// ctx.drawImage(mvRef.current, 0, 0, 854, 480)
-			// cv.toBlob((blob) => {
-			//     const storageRef = ref(storage, `roxanne/roxanne-${zeroPad(currFrame, 5)}.png`)
-			//     uploadBytes(storageRef, blob)
-			//     console.log(`getImg ${currFrame}`)
-			// })
+			// !: upload frame image data
+			const cv = cvRef.current
+			const ctx = cv.getContext('2d')
+			ctx.drawImage(mvRef.current, 0, 0, 854, 480)
+			cv.toBlob((blob) => {
+			    const storageRef = ref(storage, `${songName}/${songName}-${zeroPad(currFrame, 5)}.png`)
+			    uploadBytes(storageRef, blob)
+			    console.log(`getImg ${currFrame}`)
+			})
 			
 			mvRef.current.requestVideoFrameCallback(frameCallback)
-	}, [getPoses, startFrame, storage, detector])
+	}, [detectPoses, startFrame, storage, detector])
 
 	const playMv = useCallback(() => {
 			if (detector == null) { return }
@@ -108,35 +114,31 @@ const Uploader = () => {
 			setFrame(frame - startFrame)
 	}, [frame, startFrame])
 
+	useEffect(() => {
+		console.log(`${songName}.mp4`)
+	}, [])
+	
 	return (
 			<>
 					<> frame {frame} </>
 					<Box>
 							<Box sx={{
-									position: 'absolute',
 									width: '854',
 									height: '480',
-									top: 20,
 							}}>
 									<video ref={mvRef} 
-											width={"854"} height={"480"} src={"roxanne.mov"}
+											width={"854"} height={"480"} 
+											src={`/dance-game/${songName}.mp4`}
 											onPlay={playMv}
 											onEnded={mvEnded}
-											muted={true}
+											// muted={true}
 											// autoPlay={true}
 											controls={true}
-											hidden={true}
+											// hidden={true}
 									/>
+									{/* <canvas ref={cvRef} width={"854"} height={"480"}/> */}
+									<PoseCanvas pose={pose} color='red' width='854' height='480' scale={0.64}/>
 							</Box>
-
-							{/* <Box sx={{
-									position: 'absolute',
-									width: '854',
-									height: '400',
-									top: 20,
-							}}>
-									<canvas ref={cvRef} width={"854"} height={"480"}/>
-							</Box> */}
 					</Box>
 			</>
 	)

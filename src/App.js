@@ -1,18 +1,26 @@
 import './App.css'
 
-import Uploader from './components/Uploader'
-import Editor from './components/Editor'
+import { useState } from 'react'
+
+import Config from './components/Config'
 import GameView from './components/GameView'
 
-function App() {
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+} from 'react-router-dom'
+
+export default function App() {
+
+	// const [songName, setSongName] = useState(null)
 
   return (
-    <>
-      {/* <Uploader/> */}
-      {/* <Editor/> */}
-      <GameView/>
-    </>
+		<Router>
+			<Routes>
+			<Route path='/' element={ <GameView /> } />
+			<Route path='/config' element={ <Config /> } />
+			</Routes>
+		</Router>
   );
 }
-
-export default App

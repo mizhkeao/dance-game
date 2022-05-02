@@ -5,13 +5,13 @@ export default function PoseCanvas({pose, color, width, height, scale}) {
 
     const cvRef = useRef(null)
     
-		function drawPoint(ctx, p, mid) {
+		const drawPoint = useCallback((ctx, p, mid) => {
 			ctx.beginPath()
 			ctx.arc((p.x - mid.x) * scale, (p.y - mid.y) * scale, 2, 0, 2 * Math.PI)
 			ctx.fill()
 			ctx.stroke()
 			ctx.closePath()
-		}
+		}, [scale])
 
     const drawLine = useCallback((ctx, p1, p2, mid) => {
         if (p1 == null || p2 == null) { return }
@@ -22,12 +22,24 @@ export default function PoseCanvas({pose, color, width, height, scale}) {
 				ctx.closePath()
     }, [scale])
 
-    useEffect(() => {
-        const canvas = cvRef.current
-        const ctx = canvas.getContext('2d')
-        ctx.clearRect(0, 0, width, height)
-        if (pose == null) { return }
+		useEffect(() => {
+			const canvas = cvRef.current
+			const ctx = canvas.getContext('2d')
+			ctx.fillStyle = 'rgba(0,0,0,0.8)'
+			ctx.fillRect(0, 0, width, height)
+		}, [])
 
+    useEffect(() => {
+				// const canvas = cvRef.current
+				// const ctx = canvas.getContext('2d')
+				if (pose == null) {
+					// ctx.fillStyle = 'rgba(0,0,0,0.3)'
+					// ctx.fillRect(0, 0, width, height)
+					return 
+				}
+				const canvas = cvRef.current
+				const ctx = canvas.getContext('2d')
+        ctx.clearRect(0, 0, width, height)
 				ctx.fillStyle = 'rgba(0,0,0,0.8)'
 				ctx.fillRect(0, 0, width, height)
 
@@ -37,8 +49,8 @@ export default function PoseCanvas({pose, color, width, height, scale}) {
 				// console.log(pose)
         const p = pose
 
-				const midx = (p[6].x + p[5].x + p[12].x + p[11].x) / 4 - width/2
-				const midy = (p[6].y + p[5].y + p[12].y + p[11].y) / 4 - height/2
+				const midx = (p[6].x + p[5].x + p[12].x + p[11].x) / 4 - width/2 - 216
+				const midy = (p[6].y + p[5].y + p[12].y + p[11].y) / 4 - height/2 - 48
 				const mid = {x: midx, y: midy}
 
         // head
@@ -95,7 +107,7 @@ export default function PoseCanvas({pose, color, width, height, scale}) {
 					style={{
 						position: 'absolute',
 						bottom: 0,
-						right: -20,
+						right: 0,
 					}}
 				/>
     )

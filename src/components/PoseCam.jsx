@@ -19,7 +19,7 @@ export default function PoseCam({ setUserPose }) {
     const getDetector = async() => {
         try {
             const detectorConfig = {
-                modelUrl: "/dance-game/movenet/model.json",
+								modelUrl: "/dance-game/movenet/model.json",
                 modelType: movenet.modelType.SINGLEPOSE_THUNDER,
                 minPoseScore: 0.5,
                 enableSmoothing: true,
