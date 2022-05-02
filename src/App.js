@@ -16,7 +16,7 @@ export default function App() {
 	// const [songName, setSongName] = useState(null)
 
   return (
-		<Router>
+		<Router basename="/dance-game">
 			<Routes>
 			<Route path='/' element={ <GameView /> } />
 			<Route path='/config' element={ <Config /> } />
