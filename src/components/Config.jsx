@@ -13,8 +13,9 @@ export default function Config() {
 	}
 
 	// const [songName, setSongName] = useState('roxanne')
-	const [songName, setSongName] = useState('lilac')
-	// const [songName, setSongName] = useState('bbibbi')
+	// const [songName, setSongName] = useState('lilac')
+	const [songName, setSongName] = useState('bbibbi')
+	// const [songName, setSongName] = useState('stay')
 
 	return (
 		// <Box sx={{ width: '100%' }}>
@@ -25,7 +26,7 @@ export default function Config() {
     //     </Tabs>
     //   </Box>
 		// </Box>
-		// <Uploader songName={songName}></Uploader>
-		<Editor songName={songName}></Editor>
+		<Uploader songName={songName}></Uploader>
+		// <Editor songName={songName}></Editor>
 	)
 }

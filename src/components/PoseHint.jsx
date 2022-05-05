@@ -106,7 +106,7 @@ export default function PoseCanvas({pose, color, width, height, scale}) {
         <canvas ref={cvRef} width={width} height={height} 
 					style={{
 						position: 'absolute',
-						bottom: 0,
+						top: 0,
 						right: 0,
 					}}
 				/>

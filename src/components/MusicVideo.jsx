@@ -1,8 +1,20 @@
 import assert from 'assert'
 import { useRef, useState, useCallback, useEffect } from 'react'
-import { Typography } from '@mui/material'
+import { Box } from '@mui/material'
 
-export default function MusicVideo({ mvUrl, songName, poseArr, userPose, refPoseIndex, targetPose, setTargetPose }) {
+export default function MusicVideo({ 
+	mvUrl,
+	songName,
+	poseArr,
+	userPose,
+	refPoseIndex,
+	setP1Score,
+	p1Streak,
+	targetPose,
+	setTargetPose,
+	globalMvRef,
+	peerConn,
+	}) {
 
 	const mvRef = useRef()
 
@@ -10,14 +22,11 @@ export default function MusicVideo({ mvUrl, songName, poseArr, userPose, refPose
 	const [frame, setFrame] = useState(0)
 
 	// const refPoseIndex = useRef(0)
-  // const [targetPose, setTargetPose] = useState(null)
 
 	const poseLeeway = 5
 	const poseOffset = 0
 
-  const [score, setScore] = useState(0)
 	const poseLoss = useRef(100)
-	const streak = useRef(0)
 
 	const frameCallback = useCallback((_, metadata) => {
 		// console.log('frameCallback')
@@ -30,19 +39,28 @@ export default function MusicVideo({ mvUrl, songName, poseArr, userPose, refPose
 		if (poseArr != null && i < poseArr.length) {
 			const targetFrame = poseArr[i].frame
 			if (Math.abs(targetFrame - currFrame - poseOffset) <= poseLeeway) {
-				setTargetPose(poseArr[i].pose.keypoints)
+				// if (poseArr[i] != null) {
+				if (poseArr[i].pose != null && poseArr[i].pose.keypoints != null) {
+					setTargetPose(poseArr[i].pose.keypoints)
+				}
+				// } else {
+					// console.log(targetFrame)
+					// console.log(poseArr[i])
+					// setTargetPose(null)
+					// refPoseIndex.current += 1
+				// }
 			} else {
 				if (currFrame > targetFrame + poseLeeway - poseOffset) {
 					refPoseIndex.current += 1
 					// console.log(poseLoss.current)
 					if (poseLoss.current < 12) {
-						setScore((s) => { return s + 10 })
-						streak.current += 1
+						setP1Score((s) => { return s + 10 })
+						p1Streak.current += 1
 					} else if (poseLoss.current < 24) {
-						setScore((s) => { return s + 5 })
-						streak.current += 1
+						setP1Score((s) => { return s + 5 })
+						p1Streak.current += 1
 					} else {
-						streak.current = 0
+						p1Streak.current = 0
 					}
 
 					poseLoss.current = 100
@@ -57,13 +75,19 @@ export default function MusicVideo({ mvUrl, songName, poseArr, userPose, refPose
 		}
 
     mvRef.current.requestVideoFrameCallback(frameCallback)
-	}, [poseArr, refPoseIndex, setTargetPose, startFrame])
+	}, [p1Streak, poseArr, refPoseIndex, setP1Score, setTargetPose, startFrame])
 
 	const mvStart = useCallback(() => {
 		console.log('mvStart')
 		assert(poseArr != null)
     mvRef.current.requestVideoFrameCallback(frameCallback)
-	}, [frameCallback, poseArr])
+		const conn = peerConn.current
+			if (conn != null) {
+				conn.send({
+					play: 'play',
+				})
+			}
+	}, [frameCallback, peerConn, poseArr])
 
 	const mvEnded = useCallback(() => {
 		console.log('mvEnded')
@@ -78,11 +102,15 @@ export default function MusicVideo({ mvUrl, songName, poseArr, userPose, refPose
 	// }, [poseArr])
 
 	useEffect(() => {
-		setScore(0)
+		globalMvRef.current = mvRef.current
+	}, [globalMvRef])
+
+	useEffect(() => {
+		setP1Score(0)
 		poseLoss.current = 100
-		streak.current = 0
+		p1Streak.current = 0
 		setTargetPose(null)
-	}, [songName])
+	}, [p1Streak, setP1Score, setTargetPose, songName])
 
 	const dist2D = useCallback((p1, p2) => {
 		// console.log(p1)
@@ -131,29 +159,23 @@ export default function MusicVideo({ mvUrl, songName, poseArr, userPose, refPose
 		}
 	}, [scorePose, targetPose, userPose])
 
-	const percentScore = (score) => {
-		const perfectScore = (refPoseIndex.current) * 10
-		return parseInt( 100 * score / (perfectScore === 0 ? 1 : perfectScore))
-	}
-
 	return (
-		<div style={{ position: 'relative'}}>
-			<Typography align="right" variant="h5" component="h2"> { `Score: ${ percentScore(score) }%`/*, Loss: ${poseLoss.current}`*/ }</Typography>
-			<Typography align="right" variant="h5" component="h2"> { `Streak: ${streak.current}`}</Typography>
-			{/* <Typography variant="h7" component="h2"> { `frame ${frame}, pose ${refPoseIndex.current}` }</Typography> */}
-			<video 
-				src={mvUrl}
-				ref={mvRef} 
-				width="100%"
-				onPlay={mvStart}
-				onEnded={mvEnded}
-				controls={true}
-				// muted={true}
-				// hidden={true}
-				style={{
-					aspectRatio: 16 / 9 
-				}}
-			/>
+		<div style={{ position: 'relative' }}>			
+			<Box sx={{ border: 4 }}>
+				<video 
+					src={mvUrl}
+					ref={mvRef} 
+					width="100%"
+					onPlay={mvStart}
+					onEnded={mvEnded}
+					controls={true}
+					// muted={true}
+					// hidden={true}
+					style={{
+						aspectRatio: 16 / 9 
+					}}
+				/>
+			</Box>
 		</div>
 	)
 }

@@ -22,7 +22,7 @@ const Uploader = ({ songName }) => {
 
 	useEffect(() => {
 		// mvRef.current.playbackRate = 0.1
-		mvRef.current.playbackRate = 0.3
+		mvRef.current.playbackRate = 0.1
 		getDetector()
 	}, [])
 
@@ -69,10 +69,13 @@ const Uploader = ({ songName }) => {
 				const poseName = `${songName}-${zeroPad(currFrame, 5)}`
 				const ref = doc(db, 'mvs', songName, 'poses', poseName)
 				setDoc(ref, {
+						frame: frame,
 						keypoints: pose.keypoints,
 						score: pose.score,
 				})
-				// console.log(`getPose ${poseName}`)
+				console.log(`upload pose ${poseName}`)
+			} else {
+				console.log(`\n\n\nnull pose for ${currFrame}\n\n\n`)
 			}
 
 		} catch(e) {
@@ -91,14 +94,14 @@ const Uploader = ({ songName }) => {
 			setFrame(currFrame)
 
 			// !: upload frame image data
-			const cv = cvRef.current
-			const ctx = cv.getContext('2d')
-			ctx.drawImage(mvRef.current, 0, 0, 854, 480)
-			cv.toBlob((blob) => {
-			    const storageRef = ref(storage, `${songName}/${songName}-${zeroPad(currFrame, 5)}.png`)
-			    uploadBytes(storageRef, blob)
-			    console.log(`getImg ${currFrame}`)
-			})
+			// const cv = cvRef.current
+			// const ctx = cv.getContext('2d')
+			// ctx.drawImage(mvRef.current, 0, 0, 854, 480)
+			// cv.toBlob((blob) => {
+			//     const storageRef = ref(storage, `${songName}/${songName}-${zeroPad(currFrame, 5)}.png`)
+			//     uploadBytes(storageRef, blob)
+			//     console.log(`upload img ${currFrame}`)
+			// })
 			
 			mvRef.current.requestVideoFrameCallback(frameCallback)
 	}, [detectPoses, startFrame, storage, detector])
@@ -136,8 +139,8 @@ const Uploader = ({ songName }) => {
 											controls={true}
 											// hidden={true}
 									/>
-									{/* <canvas ref={cvRef} width={"854"} height={"480"}/> */}
-									<PoseCanvas pose={pose} color='red' width='854' height='480' scale={0.64}/>
+									<canvas ref={cvRef} width={"854"} height={"480"}/>
+									{/* <PoseCanvas pose={pose} color='red' width='854' height='480' scale={0.64}/> */}
 							</Box>
 					</Box>
 			</>

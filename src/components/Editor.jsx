@@ -28,15 +28,19 @@ export default function Editor({ songName }) {
     //     console.log(frameArr)    
     // }, [])
 
-    const songBpm = 115
-    const songFps = 24.98
-    const spacing = 60 / songBpm * songFps * 2
-    const startFrame = 163
+		// * lilac
+    // const songBpm = 115
+    // const songFps = 23.98
+    // const spacing = 60 * songFps * 2 / songBpm
+    // const startFrame = 85
 
-    // const spacing = 1
-    // const startFrame = 29.97*6.74
+		// * bbibbi
+    const songBpm = 144
+    const songFps = 23.98
+    const spacing = 60 * songFps * 2 / songBpm
+    const startFrame = 24.98 * 3
 
-    const frameArr = Array.from(Array(100), (_, i) => {
+    const frameArr = Array.from(Array(5), (_, i) => {
         const index = parseInt(i * spacing + startFrame) 
         return `${songName}-${zeroPad(index, 5)}`
     })

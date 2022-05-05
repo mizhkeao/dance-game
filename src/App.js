@@ -18,8 +18,9 @@ export default function App() {
   return (
 		<Router basename="/dance-game">
 			<Routes>
-			<Route path='/' element={ <GameView /> } />
+			<Route path='/' element={ <GameView/> } />
 			<Route path='/config' element={ <Config /> } />
+			<Route path='/:hostId' element={ <GameView/> } />
 			</Routes>
 		</Router>
   );
