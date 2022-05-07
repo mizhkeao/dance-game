@@ -1,10 +1,9 @@
 import React, { useRef, useState } from 'react'
 
 import { Box, Button, Typography } from '@mui/material'
+import CopyToClipboard from 'react-copy-to-clipboard'
 
-export default function P2Cam({ hostId, p2Stream}) {
-
-	const [waitingForP2, setWaitingForP2] = useState(false)
+export default function P2Cam({ peerId, hostId, p2Stream}) {
 	
 	const playP2Stream = () => {
 		p2Stream.current.play()
@@ -22,22 +21,21 @@ export default function P2Cam({ hostId, p2Stream}) {
 			flexDirection: 'column',
 			justifyContent: 'center',
 			alignItems: 'center',
-			visibility: `${p2Stream.current && p2Stream.current.srcObject ? 'visible' : 'hidden'}`,
 			border: 4,
-			borderColor: 'blue',
-			transform: 'scaleX(-1)',
+			borderColor: `${p2Stream.current && p2Stream.current.srcObject ? 'blue' : 'rgb(190,190,190)'}`,
 		}}>
-		<video ref={p2Stream} onLoadedMetadata={playP2Stream} />
-			{/* <Button 
-				size="large" 
-				variant="container" 
-				disableElevation 
-				onClick={invitePlayer2}
-				loading={waitingForP2}
-			>
-				Invite Player 2
-			</Button>
-			{ peerRef.current != null && <Typography> { peerRef.current.id } </Typography> } */}
+			{ peerId != null && hostId != null && hostId === peerId && (p2Stream.current && !p2Stream.current.srcObject) ?
+				<CopyToClipboard text={ `${window.location.href}/${hostId}` }>
+					<Button size="large" variant="container" disableElevation>
+						Invite Player 2!
+					</Button>
+				</CopyToClipboard>
+				: null
+			}
+			<video ref={p2Stream} onLoadedMetadata={playP2Stream} style={{ 
+				transform: 'scaleX(-1)',
+				visibility: `${p2Stream.current && p2Stream.current.srcObject ? 'visible' : 'hidden'}`
+			}}/>
 		</Box>
 	)
 }

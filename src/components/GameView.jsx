@@ -177,7 +177,7 @@ export default function GameView() {
 			}
 	
 			setSong(songName)
-			console.log(`songNeme = ${songName}`)
+			console.log(`songName = ${songName}`)
 
 		}, [db, songName, storage])
 
@@ -243,7 +243,7 @@ export default function GameView() {
 				scale={0.5}
 			/> */}
 			<P1Cam setUserPose={setUserPose} setP1Stream={setP1Stream}/>
-			<P2Cam hostId={hostId} p2Stream={p2Stream} />
+			<P2Cam peerId={peerRef.current?.id} hostId={hostId} p2Stream={p2Stream} />
 
     </Container>
     )
