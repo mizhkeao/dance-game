@@ -2,6 +2,8 @@
 
 # don't upload music videos in public
 .mp4
+.jpeg
+.webp
 
 # dependencies
 /node_modules
