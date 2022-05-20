@@ -191,60 +191,62 @@ export default function GameView() {
 		}
 
     return (
-    <Container>
-			<FormControl fullWidth>
-					<Select
-						value={songName}
-						label="Song"
-						onChange={(e) => {setSongName(e.target.value)}}
-					>
-						{/* <MenuItem value={''}>
-  						<em>None</em>
-						</MenuItem> */}
-						<MenuItem value={'roxanne'}> Roxanne - Arizona Zervas</MenuItem>
-						<MenuItem value={'lilac'}> Lilac - IU </MenuItem>
-						<MenuItem value={'bbibbi'}> Bbibbi - IU </MenuItem>
-					</Select>
-			</FormControl>
-			<Box sx={{ display: 'flex', flexDirection: 'horizontal', alignItems: 'stretch' }}>
-				<Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: '1' }}>
-					<Box sx={{ display: 'flex', flexDirection: 'column'}}>
-						<Typography align="left" variant="h5" component="h2" color="red"> { `Player 1` } </Typography>
-						<Typography align="left" variant="h5" component="h2" color="red"> { `Score: ${ percentScore(p1Score) }%` } </Typography>
-						<Typography align="left" variant="h5" component="h2" color="red"> { `Streak: ${ p1Streak.current }` } </Typography>
+			<Box sx={{ backgroundColor: 'rgb(18,18,18)' }}>
+			<Container>
+				<FormControl fullWidth>
+						<Select
+							value={songName}
+							label="Song"
+							onChange={(e) => {setSongName(e.target.value)}}
+						>
+							{/* <MenuItem value={''}>
+								<em>None</em>
+							</MenuItem> */}
+							<MenuItem value={'roxanne'}> Roxanne - Arizona Zervas</MenuItem>
+							<MenuItem value={'lilac'}> Lilac - IU </MenuItem>
+							<MenuItem value={'bbibbi'}> Bbibbi - IU </MenuItem>
+						</Select>
+				</FormControl>
+				<Box sx={{ display: 'flex', flexDirection: 'horizontal', alignItems: 'stretch' }}>
+					<Box sx={{ display: 'flex', flexDirection: 'row', flexGrow: '1' }}>
+						<Box sx={{ display: 'flex', flexDirection: 'column'}}>
+							<Typography align="left" variant="h5" component="h2" color="red"> { `Player 1` } </Typography>
+							<Typography align="left" variant="h5" component="h2" color="red"> { `Score: ${ percentScore(p1Score) }%` } </Typography>
+							<Typography align="left" variant="h5" component="h2" color="red"> { `Streak: ${ p1Streak.current }` } </Typography>
+						</Box>
+					</Box>
+					<Box sx={{ display: 'flex', flexDirection: 'row-reverse', flexGrow: '1' }}>
+						<Box sx={{ display: 'flex', flexDirection: 'column' }}>
+							<Typography align="right" variant="h5" component="h2" color="blue"> { `Player 2` } </Typography>
+							<Typography align="right" variant="h5" component="h2" color="blue"> { `Score: ${ percentScore(p2Score) }%` } </Typography>
+							<Typography align="right" variant="h5" component="h2" color="blue"> { `Streak: ${ p2Streak }` } </Typography>
+						</Box>
 					</Box>
 				</Box>
-				<Box sx={{ display: 'flex', flexDirection: 'row-reverse', flexGrow: '1' }}>
-					<Box sx={{ display: 'flex', flexDirection: 'column' }}>
-						<Typography align="right" variant="h5" component="h2" color="blue"> { `Player 2` } </Typography>
-						<Typography align="right" variant="h5" component="h2" color="blue"> { `Score: ${ percentScore(p2Score) }%` } </Typography>
-						<Typography align="right" variant="h5" component="h2" color="blue"> { `Streak: ${ p2Streak }` } </Typography>
-					</Box>
-				</Box>
-			</Box>
-			<MusicVideo 
-				mvUrl={mvUrl} 
-				songName={songName} 
-				poseArr={poseArr} 
-				userPose={userPose} 
-				refPoseIndex={refPoseIndex}
-				setP1Score={setP1Score}
-				p1Streak={p1Streak}
-				targetPose={targetPose}
-				setTargetPose={setTargetPose}
-				globalMvRef={globalMvRef}
-				peerConn={peerConn}
-			/>
-			{/* <PoseHint 
-				pose={targetPose}
-				width={384}
-				height={216} 
-				color='white' 
-				scale={0.5}
-			/> */}
-			<P1Cam setUserPose={setUserPose} setP1Stream={setP1Stream}/>
-			<P2Cam peerId={peerRef.current?.id} hostId={hostId} p2Stream={p2Stream} />
+				<MusicVideo 
+					mvUrl={mvUrl}
+					songName={songName} 
+					poseArr={poseArr} 
+					userPose={userPose} 
+					refPoseIndex={refPoseIndex}
+					setP1Score={setP1Score}
+					p1Streak={p1Streak}
+					targetPose={targetPose}
+					setTargetPose={setTargetPose}
+					globalMvRef={globalMvRef}
+					peerConn={peerConn}
+				/>
+				{/* <PoseHint 
+					pose={targetPose}
+					width={384}
+					height={216} 
+					color='white' 
+					scale={0.5}
+				/> */}
+				<P1Cam setUserPose={setUserPose} setP1Stream={setP1Stream}/>
+				<P2Cam peerId={peerRef.current?.id} hostId={hostId} p2Stream={p2Stream} />
 
-    </Container>
+			</Container>
+		</Box>
     )
 }

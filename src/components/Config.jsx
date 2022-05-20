@@ -14,8 +14,8 @@ export default function Config() {
 
 	// const [songName, setSongName] = useState('roxanne')
 	// const [songName, setSongName] = useState('lilac')
-	const [songName, setSongName] = useState('bbibbi')
-	// const [songName, setSongName] = useState('stay')
+	// const [songName, setSongName] = useState('bbibbi')
+	const [songName, setSongName] = useState('old-town-road')
 
 	return (
 		// <Box sx={{ width: '100%' }}>

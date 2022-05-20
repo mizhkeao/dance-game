@@ -139,8 +139,10 @@ const Uploader = ({ songName }) => {
 											controls={true}
 											// hidden={true}
 									/>
-									<canvas ref={cvRef} width={"854"} height={"480"}/>
-									{/* <PoseCanvas pose={pose} color='red' width='854' height='480' scale={0.64}/> */}
+									{/* <canvas ref={cvRef} width={"854"} height={"480"}/> */}
+									<PoseCanvas pose={pose} color='red' width='854' height='480' scale={0.64} sx={{
+										position: 'absolute'
+									}}/>
 							</Box>
 					</Box>
 			</>

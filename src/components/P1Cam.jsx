@@ -58,16 +58,21 @@ export default function P1Cam({ setUserPose, setP1Stream }) {
     }, [])
 
     return (
-        <Box sx={{ 
-					border: 4, 
-					borderColor: "red",
+        <Box className='gradient-border'
+				sx={{ 
 					transform: 'scaleX(-1)',
 					position: 'absolute',
-          bottom: 0,
-          left: 0,
+					width: 384,
+					height: 216,
+          bottom: 32,
+          left: 32,
+					justifyContent: 'center',
+					alignItems: 'center,'
 				}}>
-            <video ref={cameraRef} width="384" height="216" />
-            {/* <PoseCanvas pose={pose} color="red" width="384" height="216" scale={1} /> */}
+						<video ref={cameraRef} width='384' height='216' style={{
+							position: 'absolute',
+							borderRadius: 4
+						}}/>
         </Box>
     )
 }

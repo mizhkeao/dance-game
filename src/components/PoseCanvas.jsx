@@ -20,8 +20,8 @@ export default function PoseCanvas({ pose, color, width, height, scale }) {
         const canvas = cvRef.current
         const ctx = canvas.getContext('2d')
         ctx.clearRect(0, 0, width, height)
-				ctx.fillStyle = 'rgba(0,0,0)'
-				ctx.fillRect(0, 0, width, height)
+				// ctx.fillStyle = 'rgba(0,0,0)'
+				// ctx.fillRect(0, 0, width, height)
 
         if (pose == null) { return }
 

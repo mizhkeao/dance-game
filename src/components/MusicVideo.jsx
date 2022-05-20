@@ -161,8 +161,8 @@ export default function MusicVideo({
 
 	return (
 		<div style={{ position: 'relative' }}>			
-			<Box sx={{ border: 4 }}>
-				<video 
+			<Box sx={{ border: 1, borderColor: 'rgb(224,224,224)'}}>
+				<video
 					src={mvUrl}
 					ref={mvRef} 
 					width="100%"
