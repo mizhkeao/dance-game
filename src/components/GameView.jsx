@@ -1,20 +1,16 @@
 
-import { Container, FormControl, Select, MenuItem } from '@mui/material'
 import { getFirestore, doc, getDoc } from "firebase/firestore"
 import { getStorage, getDownloadURL, ref } from "firebase/storage"
+import { useEffect, useState, useRef } from 'react'
+import { useParams } from 'react-router-dom'
+import Peer from 'peerjs'
+
+import { Container, FormControl, Select, MenuItem, Typography, Box } from '@mui/material'
 
 import MusicVideo from './MusicVideo'
 import P1Cam from './P1Cam'
 import P2Cam from './P2Cam'
 import fbApp from './Firestore'
-import Peer from 'peerjs'
-import { useEffect, useState, useRef } from 'react'
-
-import { useParams } from 'react-router-dom'
-
-import { Typography, Box } from '@mui/material'
-
-import PoseHint from './PoseHint'
 
 export default function GameView() {
 
@@ -158,7 +154,7 @@ export default function GameView() {
 				const poseUrls = frameArr.map(async (urlKey, index) => {
 					const poseRef = doc(db, 'mvs', songName, 'poses', urlKey)
 					const poseSnap = await getDoc(poseRef)
-					const frame = parseInt(urlKey.split('-')[1])
+					const frame = parseInt(urlKey.split('-').slice(-1)[0])
 					const framePose = {frame: frame, pose: poseSnap.data()}
 					if (framePose.pose == null) {
 						 console.log(`\n\n${framePose}\n\n`)
@@ -205,6 +201,7 @@ export default function GameView() {
 							<MenuItem value={'roxanne'}> Roxanne - Arizona Zervas</MenuItem>
 							<MenuItem value={'lilac'}> Lilac - IU </MenuItem>
 							<MenuItem value={'bbibbi'}> Bbibbi - IU </MenuItem>
+							<MenuItem value={'old-town-road'}> Old Town Road - Lil Nas X </MenuItem>
 						</Select>
 				</FormControl>
 				<Box sx={{ display: 'flex', flexDirection: 'horizontal', alignItems: 'stretch' }}>
@@ -215,13 +212,15 @@ export default function GameView() {
 							<Typography align="left" variant="h5" component="h2" color="red"> { `Streak: ${ p1Streak.current }` } </Typography>
 						</Box>
 					</Box>
-					<Box sx={{ display: 'flex', flexDirection: 'row-reverse', flexGrow: '1' }}>
+					{ call != null && 
+						<Box sx={{ display: 'flex', flexDirection: 'row-reverse', flexGrow: '1' }}>
 						<Box sx={{ display: 'flex', flexDirection: 'column' }}>
 							<Typography align="right" variant="h5" component="h2" color="blue"> { `Player 2` } </Typography>
 							<Typography align="right" variant="h5" component="h2" color="blue"> { `Score: ${ percentScore(p2Score) }%` } </Typography>
 							<Typography align="right" variant="h5" component="h2" color="blue"> { `Streak: ${ p2Streak }` } </Typography>
 						</Box>
 					</Box>
+					}
 				</Box>
 				<MusicVideo 
 					mvUrl={mvUrl}

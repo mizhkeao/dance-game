@@ -1,6 +1,7 @@
 import assert from 'assert'
 import { useRef, useState, useCallback, useEffect } from 'react'
-import { Box } from '@mui/material'
+import { Box, Typography } from '@mui/material'
+import { useTransition, animated } from 'react-spring'
 
 export default function MusicVideo({ 
 	mvUrl,
@@ -20,8 +21,7 @@ export default function MusicVideo({
 
   const [startFrame, setStartFrame] = useState(0)
 	const [frame, setFrame] = useState(0)
-
-	// const refPoseIndex = useRef(0)
+	const [feedback, setFeedback] = useState({type: 'none', frame: 0})
 
 	const poseLeeway = 5
 	const poseOffset = 0
@@ -53,13 +53,20 @@ export default function MusicVideo({
 				if (currFrame > targetFrame + poseLeeway - poseOffset) {
 					refPoseIndex.current += 1
 					// console.log(poseLoss.current)
-					if (poseLoss.current < 12) {
+					if (poseLoss.current < 10) {
 						setP1Score((s) => { return s + 10 })
+						setFeedback({type: 'perfect', frame: currFrame})
 						p1Streak.current += 1
-					} else if (poseLoss.current < 24) {
-						setP1Score((s) => { return s + 5 })
+					} else if (poseLoss.current < 15) {
+						setP1Score((s) => { return s + 6 })
+						setFeedback({type: 'good', frame: currFrame})
+						p1Streak.current += 1
+					} else if (poseLoss.current < 25) {
+						setP1Score((s) => { return s + 3 })
+						setFeedback({type: 'ok', frame: currFrame})
 						p1Streak.current += 1
 					} else {
+						setFeedback({type: 'bad', frame: currFrame})
 						p1Streak.current = 0
 					}
 
@@ -100,6 +107,10 @@ export default function MusicVideo({
 	// 		mvRef.current.play()
 	// 	}
 	// }, [poseArr])
+
+	useEffect(() => {
+		console.log(feedback)
+	}, [feedback])
 
 	useEffect(() => {
 		globalMvRef.current = mvRef.current
@@ -175,6 +186,15 @@ export default function MusicVideo({
 						aspectRatio: 16 / 9 
 					}}
 				/>
+				{
+					feedback.type !== 'none' && 
+					<Typography align="center" variant="h3" component="h2" sx={{
+						position: 'absolute',
+						left: 330,
+						bottom: 100,
+						zIndex: 10000,
+					}}> { feedback.type == 'bad' ? '❌' : feedback.type == 'ok' ? '😐' : feedback.type == 'good' ? '😄' : feedback.type == 'perfect' ? '🤩' : ''} </Typography>
+				}
 			</Box>
 		</div>
 	)
