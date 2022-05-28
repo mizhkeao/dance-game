@@ -140,7 +140,7 @@ export default function GameView() {
 
 		useEffect(() => {
 			const setSong = async (songName) => {
-
+				if (songName === '') { return }
 				const songRef = doc(db, 'mvs', songName)
 				const songSnap = await getDoc(songRef)
 				const song = songSnap.data()

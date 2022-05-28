@@ -1,8 +1,10 @@
 import './App.css'
 
-import Config from './components/Config'
+import Editor from './components/Editor'
+import Uploader from './components/Uploader'
 import GameView from './components/GameView'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { useState } from 'react'
 
 import {
 	BrowserRouter as Router,
@@ -19,13 +21,19 @@ const darkTheme = createTheme({
 
 export default function App() {
 
+	// const [songName, setSongName] = useState('roxanne')
+	// const [songName, setSongName] = useState('lilac')
+	// const [songName, setSongName] = useState('bbibbi')
+	const [songName, setSongName] = useState('old-town-road')
+
   return (
 		<ThemeProvider theme={darkTheme}>
 			<Router basename="/dance-game">
 				<Routes>
 					<Route path='/' element={ <GameView/> } />
-					<Route path='/config' element={ <Config /> } />
 					<Route path='/:hostId' element={ <GameView/> } />
+					<Route path='/upload' element={ <Uploader songName={songName}/> } />
+					<Route path='/editor' element={ <Editor songName={songName}/> } />
 				</Routes>
 			</Router>
 		</ThemeProvider>

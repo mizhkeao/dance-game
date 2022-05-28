@@ -35,12 +35,19 @@ export default function Editor({ songName }) {
     // const startFrame = 85
 
 		// * bbibbi
-    const songBpm = 144
-    const songFps = 23.98
-    const spacing = 60 * songFps * 2 / songBpm
-    const startFrame = 24.98 * 3
+    // const songBpm = 120
+    // const songFps = 23.98
+    // const spacing = 60 * songFps * 2 / songBpm
+    // const startFrame = 24.98 * 3
 
-    const frameArr = Array.from(Array(5), (_, i) => {
+		// * old town road
+		const songBpm = 136
+    const songFps = 30
+		const timeSig = 2
+    const spacing = 60 * songFps * timeSig / songBpm
+    const startFrame = 411
+
+    const frameArr = Array.from(Array(10), (_, i) => {
         const index = parseInt(i * spacing + startFrame) 
         return `${songName}-${zeroPad(index, 5)}`
     })

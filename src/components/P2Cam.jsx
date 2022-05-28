@@ -10,19 +10,19 @@ export default function P2Cam({ peerId, hostId, p2Stream}) {
 	}
 
 	return (
-		<Box sx={{ 
+		<Box className='gradient-border' sx={{
 			position: 'absolute',
-			backgroundColor: 'white',
 			width: 384,
 			height: 216,
-			bottom: 0,
-			right: 0,
-			display: 'flex',
-			flexDirection: 'column',
+			bottom: 32,
+			right: 32,
 			justifyContent: 'center',
 			alignItems: 'center',
+			backgroundColor: 'rgb(150,150,150)',
+			display: 'flex',
+			flexDirection: 'column',
 			border: 4,
-			borderColor: `${p2Stream.current && p2Stream.current.srcObject ? 'blue' : 'rgb(190,190,190)'}`,
+			borderColor: `${p2Stream.current && p2Stream.current.srcObject ? 'blue' : 'rgb(150,150,150)'}`,
 		}}>
 			{ peerId != null && hostId != null && hostId === peerId && (p2Stream.current && !p2Stream.current.srcObject) ?
 				<CopyToClipboard text={ `${window.location.href}/${hostId}` }>
@@ -32,9 +32,11 @@ export default function P2Cam({ peerId, hostId, p2Stream}) {
 				</CopyToClipboard>
 				: null
 			}
-			<video ref={p2Stream} onLoadedMetadata={playP2Stream} style={{ 
+			<video 
+				ref={p2Stream} onLoadedMetadata={playP2Stream} style={{ 
 				transform: 'scaleX(-1)',
-				visibility: `${p2Stream.current && p2Stream.current.srcObject ? 'visible' : 'hidden'}`
+				visibility: `${p2Stream.current && p2Stream.current.srcObject ? 'visible' : 'hidden'}`,
+				borderRadius: 4,
 			}}/>
 		</Box>
 	)
